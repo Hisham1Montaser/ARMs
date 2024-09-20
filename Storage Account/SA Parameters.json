@@ -1,0 +1,24 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+
+        "StorageAccountName": {
+            "value": "bastawisi1"
+        },
+        "StorageAccountType": {
+            "value": "Standard_LRS"
+        },
+        "adminpw": {
+            "reference": {
+                "keyVault": {
+                "id": "/subscriptions/e182880f-be41-44f8-abc9-0ab66f6c5789/resourceGroups/RG1/providers/Microsoft.KeyVault/vaults/vaultforpw"
+                },
+                "secretName": "secretforpw"
+              }
+            }
+      
+        }
+
+        }
+    

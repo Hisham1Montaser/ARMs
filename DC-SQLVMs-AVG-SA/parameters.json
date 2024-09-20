@@ -1,0 +1,48 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_SQL0_name": {
+            "value": null
+        },
+        "virtualMachines_SQL1_name": {
+            "value": null
+        },
+        "virtualMachines_SQL2_name": {
+            "value": null
+        },
+        "virtualNetworks_VNET1_name": {
+            "value": null
+        },
+        "networkInterfaces_sql0215_name": {
+            "value": null
+        },
+        "networkInterfaces_sql1695_name": {
+            "value": null
+        },
+        "networkInterfaces_sql2989_name": {
+            "value": null
+        },
+        "publicIPAddresses_SQL0_ip_name": {
+            "value": null
+        },
+        "publicIPAddresses_SQL1_ip_name": {
+            "value": null
+        },
+        "publicIPAddresses_SQL2_ip_name": {
+            "value": null
+        },
+        "storageAccounts_mysqlwitness_name": {
+            "value": null
+        },
+        "networkSecurityGroups_SQL0_nsg_name": {
+            "value": null
+        },
+        "networkSecurityGroups_SQL1_nsg_name": {
+            "value": null
+        },
+        "networkSecurityGroups_SQL2_nsg_name": {
+            "value": null
+        }
+    }
+}

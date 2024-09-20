@@ -1,0 +1,71 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "StorageAccountName":{
+            "type": "string"
+        },
+        "PlanName": {
+            "type": "string"
+        },
+        "WebAppName": {
+            "type": "string"
+        }
+    },
+    "functions": [],
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2023-01-01",
+            "location": "[resourceGroup().location]",
+            "name": "[parameters('StorageAccountName')]",
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "resources": [
+                {
+                "type": "blobServices/containers",
+                "apiVersion": "2023-01-01",
+                "name": "/default/input",
+                "dependsOn": [
+                "[parameters('StorageAccountName')]"]
+                }
+                
+            ]
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2022-09-01",
+            "name": "[parameters('PlanName')]",
+            "location":"[resourceGroup().location]",
+            "sku": {
+                "name": "S1"
+            }
+        } ,
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2022-09-01",
+            "name":"[parameters('WebAppName')]",
+            "location":"[resourceGroup().location]",
+            "dependsOn":[
+                "[parameters('PlanName')]",
+                "[parameters('StorageAccountName')]"
+            ],
+            "properties": {
+                "serverFarmId":"[resourceId('Microsoft.Web/serverfarms',parameters('PlanName'))]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "StorageAccessKey",
+                            "value": "[listKeys(parameters('StorageAccountName'),'2023-01-01').keys[0].value]"
+                        }
+                    ]
+
+                }
+            }
+        }
+        
+    ],
+    "outputs": {}
+}

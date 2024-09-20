@@ -1,0 +1,148 @@
+{"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "variables": {
+                        "RGLocation": "East US",
+                        "VMName": "myvm",
+                        "VNETName": "[concat(variables('VMName'),'-myvnet')]",
+                        "NSGName": "[concat(variables('VMName'),'-mynsg')]",
+                        "PublicIPName": "[concat(variables('VMName'),'-mypip')]",
+                        "NICName": "[concat(variables('VMName'),'-mynic')]",
+                        "SubnetName": "[concat(variables('VNETName'),'-mysubnet')]"
+                    },
+
+                    "resources": [
+                        {
+                            "name": "[variables('PublicIPName')]",
+                            "type": "Microsoft.Network/publicIPAddresses",
+                            "apiVersion": "2023-04-01",
+                            "location": "[variables('RGLocation')]",
+                            "properties": {
+                                "publicIPAllocationMethod": "Dynamic",
+                                "dnsSettings": {
+                                    "domainNameLabel": "[variables('PublicIPName')]"
+                                }
+                            }
+                        },
+                        {
+                            "name": "[variables('NSGName')]",
+                            "type": "Microsoft.Network/networkSecurityGroups",
+                            "apiVersion": "2023-04-01",
+                            "location": "[variables('RGLocation')]",
+                            "properties": {
+                                "securityRules": [
+                                    {
+                                        "name": "RDPrule",
+                                        "properties": {
+                                            "description": "description",
+                                            "protocol": "Tcp",
+                                            "sourcePortRange": "*",
+                                            "destinationPortRange": "3389",
+                                            "sourceAddressPrefix": "*",
+                                            "destinationAddressPrefix": "*",
+                                            "access": "Allow",
+                                            "priority": 100,
+                                            "direction": "Inbound"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "[variables('VNETName')]",
+                            "type": "Microsoft.Network/virtualNetworks",
+                            "apiVersion": "2023-04-01",
+                            "location": "[variables('RGLocation')]",
+                            "dependsOn": ["[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSGName'))]"],
+                            "properties": {
+                                "addressSpace": {
+                                    "addressPrefixes": [
+                                        "10.0.0.0/16"
+                                    ]
+                                },
+                                "subnets": [
+                                    {
+                                        "name": "[variables('SubnetName')]",
+                                        "properties": {
+                                            "addressPrefix": "10.0.0.0/24",
+                                            "networkSecurityGroup": {
+                                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('NSGName'))]"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "[variables('NICName')]",
+                            "type": "Microsoft.Network/networkInterfaces",
+                            "apiVersion": "2023-04-01",
+                            "location": "[variables('RGLocation')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIPName'))]"
+                                ,
+                                "[resourceId('Microsoft.Network/virtualNetworks', variables('VNETName'))]"
+                            ],
+                            "properties": {
+                                "ipConfigurations": [
+                                    {
+                                        "name": "ipConfig1",
+                                        "properties": {
+                                            "privateIPAllocationMethod": "Dynamic",
+                                            "publicIPAddress": {
+                                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIPName'))]"
+                                            },
+                                            "subnet": {
+                                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('VNETName'), variables('SubnetName'))]"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "[variables('VMName')]",
+                            "type": "Microsoft.Compute/virtualMachines",
+                            "apiVersion": "2023-03-01",
+                            "location": "[variables('RGLocation')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Network/networkInterfaces', variables('NICName'))]"
+                            ],
+                            "properties": {
+                                "hardwareProfile": {
+                                    "vmSize": "Standard_DS1_v2"
+                                },
+                                "osProfile": {
+                                    "computerName": "[variables('VMName')]",
+                                    "adminUsername": "Admiin",
+                                    "adminPassword": "Lan-main-2009"
+                                },
+                                "storageProfile": {
+                                    "imageReference": {
+                                        "publisher": "MicrosoftWindowsServer",
+                                        "offer": "WindowsServer",
+                                        "sku": "2019-Datacenter",
+                                        "version": "latest"
+                                    },
+                                    "osDisk": {
+                                        "name": "OSDisk",
+                                        "caching": "None",
+                                        "createOption": "FromImage",
+                                        "managedDisk": {
+                                            "storageAccountType": "StandardSSD_LRS"
+                                        }
+                                    }
+                                },
+                                "networkProfile": {
+                                    "networkInterfaces": [
+                                        {
+                                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('NICName'))]"
+                                        }
+                                    ]
+                                },
+                                "priority": "Spot",
+                                "evictionPolicy": "Deallocate"
+                            }
+                        }
+                                        ]
+                                    }

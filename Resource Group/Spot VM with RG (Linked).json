@@ -1,0 +1,44 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "TemplateURI": {
+            "type": "string"
+        },
+        "TemplateSAS": {
+            "type": "securestring"
+        }
+    },
+    "functions": [],
+    "variables": {
+        "RGName": "TesttRG",
+        "RGLocation": "East US"
+    },
+
+
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2018-05-01",
+            "location": "West Europe",
+            "name": "[variables('RGName')]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "name": "MyVMLinkedTemplate",
+            "resourceGroup": "[variables('RGName')]",
+            "dependsOn": ["[resourceId('Microsoft.Resources/resourceGroups', variables('RGName'))]"],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[concat(parameters('TemplateURI'),'?',parameters('TemplateSAS'))]"
+                }
+            }
+
+        }]
+    
+}
+                

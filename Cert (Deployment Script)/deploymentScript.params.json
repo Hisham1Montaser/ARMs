@@ -1,0 +1,19 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+                "keyVaultName": {
+            "value": "depscriptvaulttry"
+        },
+
+        "objectId": {
+            "value": "7c33a96b-217c-475d-be86-382084b16fb5"
+        },
+        "identityId": {
+            "value": "/subscriptions/e182880f-be41-44f8-abc9-0ab66f6c5789/resourceGroups/MyRG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/Anotherone"
+        }
+
+
+
+    }
+}
